@@ -1,11 +1,10 @@
-package dkostiuchenko.trycatch.chessproblem.piece;
-
-import dkostiuchenko.trycatch.chessproblem.Board;
+package dkostiuchenko.trycatch.chessproblem;
 
 /**
  * All pieces are stateless and can be implemented as singletons. Enum is a perfect way to do that.
  */
-public enum Pieces implements Piece {
+public enum Piece {
+    NONE("_"),
     BISHOP("B") {
         @Override
         public boolean canAttackFrom(Board board, int file, int rank) {
@@ -64,19 +63,14 @@ public enum Pieces implements Piece {
 
     private String symbol;
 
-    Pieces(String symbol) {
+    Piece(String symbol) {
         this.symbol = symbol;
     }
 
-    public int code() {
-        return ordinal() + 1;
-    }
 
-    public static Piece ofCode(int code) {
-        if (code < 1 | code > values().length) {
-            throw new IllegalArgumentException("Unknown piece code " + code);
-        }
-        return values()[code - 1];
+    // to be overriden by instances
+    public boolean canAttackFrom(Board board, int file, int rank) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

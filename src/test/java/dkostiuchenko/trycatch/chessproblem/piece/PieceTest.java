@@ -1,16 +1,15 @@
 package dkostiuchenko.trycatch.chessproblem.piece;
 
 import dkostiuchenko.trycatch.chessproblem.Board;
+import dkostiuchenko.trycatch.chessproblem.Piece;
 import org.junit.Test;
 
+import static dkostiuchenko.trycatch.chessproblem.Piece.*;
 import static dkostiuchenko.trycatch.chessproblem.TestUtils.failureMsg;
-import static dkostiuchenko.trycatch.chessproblem.piece.Pieces.BISHOP;
-import static dkostiuchenko.trycatch.chessproblem.piece.Pieces.KING;
-import static dkostiuchenko.trycatch.chessproblem.piece.Pieces.KNIGHT;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class PiecesTest {
+public class PieceTest {
 
     @Test
     public void kingCanAttack() {
@@ -113,19 +112,19 @@ public class PiecesTest {
     public void knightCanNotAttack() {
         Board b = new Board(5, 5);
         fillInBoard(b, BISHOP);
-        b.set(null, 0, 3);
-        b.set(null, 1, 4);
-        b.set(null, 3, 4);
-        b.set(null, 4, 3);
-        b.set(null, 4, 1);
-        b.set(null, 3, 0);
-        b.set(null, 1, 0);
-        b.set(null, 0, 1);
+        b.set(NONE, 0, 3);
+        b.set(NONE, 1, 4);
+        b.set(NONE, 3, 4);
+        b.set(NONE, 4, 3);
+        b.set(NONE, 4, 1);
+        b.set(NONE, 3, 0);
+        b.set(NONE, 1, 0);
+        b.set(NONE, 0, 1);
 
         assertFalse(failureMsg(b), KNIGHT.canAttackFrom(b, 2, 2));
     }
 
-    private void fillInBoard(Board b, Pieces piece) {
+    private void fillInBoard(Board b, Piece piece) {
         for (int rank = 0; rank < b.ranks(); rank++) {
             for(int file = 0; file < b.files(); file++) {
                 b.set(piece, file, rank);

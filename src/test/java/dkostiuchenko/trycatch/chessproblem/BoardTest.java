@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static dkostiuchenko.trycatch.chessproblem.TestUtils.failureMsg;
-import static dkostiuchenko.trycatch.chessproblem.piece.Pieces.*;
+import static dkostiuchenko.trycatch.chessproblem.Piece.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -43,11 +43,11 @@ public class BoardTest {
         b.set(KING, 2, 3);
         b.set(BISHOP, 3, 2);
         b.set(QUEEN, 1, 2);
-        b.set(null, 1, 2);
+        b.set(NONE, 1, 2);
 
         assertEquals(failureMsg(b), KING, b.get(2, 3));
         assertEquals(failureMsg(b), BISHOP, b.get(3, 2));
-        assertNull(failureMsg(b), b.get(1, 2));
+        assertEquals(failureMsg(b), NONE, b.get(1, 2));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class BoardTest {
 
         b.set(KING, 0, 0);
         b.set(KING, 0, 1);
-        b.set(null, 0, 1);
+        b.set(NONE, 0, 1);
         assertEquals(failureMsg(b), 1, b.countFile(0));
     }
 
@@ -81,7 +81,7 @@ public class BoardTest {
 
         b.set(KING, 0, 0);
         b.set(KING, 1, 0);
-        b.set(null, 1, 0);
+        b.set(NONE, 1, 0);
         assertEquals(failureMsg(b), 1, b.countRank(0));
     }
 
@@ -158,7 +158,7 @@ public class BoardTest {
     public void countBackDiagonal_iae() {
         Board b = new Board(7, 5);
         thrown.expect(IllegalArgumentException.class);
-        b.countBackDiagonal(6,6);
+        b.countBackDiagonal(6, 6);
     }
 
 }
