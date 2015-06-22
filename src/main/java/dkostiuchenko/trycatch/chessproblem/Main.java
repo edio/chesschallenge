@@ -3,6 +3,7 @@ package dkostiuchenko.trycatch.chessproblem;
 public class Main {
     /**
      * Is called after everything is set up
+     *
      * @param permutations
      * @param checker
      * @param collector
@@ -12,4 +13,5 @@ public class Main {
             collector.collect(b, checker.isIndependent(b));
         }
     }
+
 }
