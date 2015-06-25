@@ -1,5 +1,8 @@
 package dkostiuchenko.trycatch.chessproblem;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import static dkostiuchenko.trycatch.chessproblem.Piece.NONE;
 
 /**
@@ -12,9 +15,6 @@ public class Board {
     private final int ranks;
     // on 64-bit jvm Enums may be considerably slower. But we'll see
     private final Piece[] squares;
-    // hold pre-calculated number of occupied squares for each file and rank
-    private final int[] filesCounts;
-    private final int[] ranksCounts;
 
     public Board(final int files, final int ranks) {
         this.files = files;
@@ -25,9 +25,15 @@ public class Board {
         for (int i = 0; i < this.squares.length; i++) {
             this.squares[i] = NONE;
         }
+    }
 
-        this.filesCounts = new int[files];
-        this.ranksCounts = new int[ranks];
+    public Board(final int files, final int ranks, final Piece[] squares) {
+        if (squares.length != files * ranks) {
+            throw new IllegalArgumentException("Squares array length is not equal to files*ranks");
+        }
+        this.files = files;
+        this.ranks = ranks;
+        this.squares = squares;
     }
 
     /**
@@ -35,7 +41,7 @@ public class Board {
      *
      * @param file file of the square
      * @param rank rank of the square
-     * @throws if square is invalid (i.e., not on the board)
+     * @throws IllegalArgumentException if square is invalid (i.e., not on the board)
      */
     public void validateSquare(int file, int rank) throws IllegalArgumentException {
         if (!isValidSquare(file, rank)) {
@@ -92,22 +98,7 @@ public class Board {
         if (piece == null) {
             throw new NullPointerException();
         }
-        final int index = getIndex(file, rank);
-        if (piece == NONE) {
-            Piece previous = squares[index];
-            squares[index] = NONE;
-            if (previous != NONE) {
-                filesCounts[file]--;
-                ranksCounts[rank]--;
-            }
-        } else {
-            Piece previous = squares[index];
-            squares[index] = piece;
-            if (previous == NONE) {
-                filesCounts[file]++;
-                ranksCounts[rank]++;
-            }
-        }
+        squares[getIndex(file, rank)] = piece;
     }
 
     /**
@@ -120,7 +111,17 @@ public class Board {
         if (file < 0 | file >= files) {
             throw new IllegalArgumentException("Index out of bounds");
         }
-        return filesCounts[file];
+
+        int count = 0;
+
+        final int initialIndex = file * ranks;
+        final int finalIndex = initialIndex + ranks;
+        for (int index = initialIndex; index < finalIndex; index++) {
+            if (squares[index] != NONE) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
@@ -133,7 +134,17 @@ public class Board {
         if (rank < 0 | rank >= ranks) {
             throw new IllegalArgumentException("Index out of bounds");
         }
-        return ranksCounts[rank];
+
+        int count = 0;
+
+        final int finalIndex = files * (ranks - 1) + rank;
+        final int increment = ranks;
+        for (int index = rank; index < finalIndex; index += increment) {
+            if (squares[index] != NONE) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
@@ -150,17 +161,17 @@ public class Board {
             count++;
         }
 
-        int step = ranks + 1;
+        int stepSize = ranks + 1;
 
         int stepsUp = Math.min(files - file - 1, ranks - rank - 1);
-        for (int s = 0, index = initialIndex + step; s < stepsUp; s++, index += step) {
+        for (int s = 0, index = initialIndex + stepSize; s < stepsUp; s++, index += stepSize) {
             if (squares[index] != NONE) {
                 count++;
             }
         }
 
         int stepsDown = Math.min(file, rank);
-        for (int s = 0, index = initialIndex - step; s < stepsDown; s++, index -= step) {
+        for (int s = 0, index = initialIndex - stepSize; s < stepsDown; s++, index -= stepSize) {
             if (squares[index] != NONE) {
                 count++;
             }
@@ -182,17 +193,17 @@ public class Board {
             count++;
         }
 
-        int step = ranks - 1;
+        int stepSize = ranks - 1;
 
         int stepsUp = Math.min(files - file - 1, rank);
-        for (int s = 0, index = initialIndex + step; s < stepsUp; s++, index += step) {
+        for (int s = 0, index = initialIndex + stepSize; s < stepsUp; s++, index += stepSize) {
             if (squares[index] != NONE) {
                 count++;
             }
         }
 
         int stepsDown = Math.min(file, ranks - rank - 1);
-        for (int s = 0, index = initialIndex - step; s < stepsDown; s++, index -= step) {
+        for (int s = 0, index = initialIndex - stepSize; s < stepsDown; s++, index -= stepSize) {
             if (squares[index] != NONE) {
                 count++;
             }
@@ -237,5 +248,18 @@ public class Board {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return Objects.equals(files, board.files) &&
+                Objects.equals(ranks, board.ranks) &&
+                Arrays.equals(squares, board.squares);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(files, ranks) * 31 + Arrays.hashCode(squares);
+    }
 }
