@@ -1,8 +1,6 @@
 package dkostiuchenko.trycatch.chessproblem.permutation;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Base class to test permutation strategy
@@ -37,10 +35,18 @@ public abstract class BasePermutatorTest<P> {
 
     public static class UniqueArrayCountingCollector<P> implements Permutator.PermutationCollector<P> {
         private final Set<HashableArrayWrapper> set = new HashSet<>();
+        private final List<P> duplicates = new ArrayList<>();
 
         @Override
         public void collect(P permutation) {
-            set.add(new HashableArrayWrapper((Object[]) permutation));
+            final boolean add = set.add(new HashableArrayWrapper((Object[]) permutation));
+            if (!add) {
+                duplicates.add(permutation);
+            }
+        }
+
+        public List<P> getDuplicates() {
+            return duplicates;
         }
 
         public long getCount() {
@@ -52,7 +58,7 @@ public abstract class BasePermutatorTest<P> {
         private final Object[] array;
 
         private HashableArrayWrapper(Object[] array) {
-            this.array = array;
+            this.array = Arrays.copyOf(array, array.length);
         }
 
         @Override
@@ -109,7 +115,7 @@ public abstract class BasePermutatorTest<P> {
     public static long multisetPermutations(int setSize, int... repeatableItemsCounts) {
         long result = factorial(setSize);
         for (int repeatableItemsCount : repeatableItemsCounts) {
-            result /= repeatableItemsCount;
+            result /= factorial(repeatableItemsCount);
         }
         return result;
     }
