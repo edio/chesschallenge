@@ -94,7 +94,7 @@ public class Application {
             List<AbstractResultWritingObserver> observers = new ArrayList<>();
 
             if (verbose) {
-                observers.add(new RunStatisticsObserver(new PrintWriter(System.err)));
+                observers.add(RunStatisticsObserver.create(new PrintWriter(System.err)));
             }
 
             return observers;

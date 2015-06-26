@@ -6,49 +6,47 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Gathers some statistics during execution and prints it periodically
  */
 public class RunStatisticsObserver extends AbstractResultWritingObserver {
 
-    public static final long REPORTING_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(30);
+    private static final long REPORTING_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
-    private final AtomicLong totalPermutations = new AtomicLong();
-    private final AtomicInteger independentPermutations = new AtomicInteger();
-    private long totalOnLastTick;
-    private final long reportingDelayMillis;
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
-
-    /**
-     * Create reporting observer wiht default reporting delay of {@link #REPORTING_DELAY_MILLIS}
-     */
-    public RunStatisticsObserver(Writer outputWriter) {
-        this(outputWriter, REPORTING_DELAY_MILLIS);
-    }
+    // these may be inconsistent due to lack of atomicity or even race condition on 32-bit os, but we're ok with that
+    private volatile long totalPermutations;
+    private volatile int independentPermutations;
+    private volatile long totalOnLastTick;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
 
     /**
      * Create reporting observer wiht custom reporting delay
      */
-    public RunStatisticsObserver(Writer outputWriter, long reportingDelayMillis) {
+    private RunStatisticsObserver(Writer outputWriter) {
         super(outputWriter);
-        this.reportingDelayMillis = reportingDelayMillis;
+    }
 
-        if (reportingDelayMillis > 0) {
-            Thread reportingThread = new Thread(new TimedPrintJob());
-            reportingThread.setName("chesschallenge-statistics");
-            reportingThread.setDaemon(true);
-            reportingThread.start();
-        }
+    /**
+     * Create instance of {@link RunStatisticsObserver} and run background thread to report statistics periodically
+     *
+     * @param outputWriter writer to output to
+     * @return new instance
+     */
+    public static RunStatisticsObserver create(Writer outputWriter) {
+        RunStatisticsObserver instance = new RunStatisticsObserver(outputWriter);
+        Thread reportingThread = new Thread(instance.new TimedPrintJob());
+        reportingThread.setName("chesschallenge-statistics");
+        reportingThread.setDaemon(true);
+        reportingThread.start();
+        return instance;
     }
 
     @Override
     public void notifyResult(Board b, boolean isIndependent) {
-        totalPermutations.incrementAndGet();
+        totalPermutations++;
         if (isIndependent) {
-            independentPermutations.incrementAndGet();
+            independentPermutations++;
         }
     }
 
@@ -56,17 +54,15 @@ public class RunStatisticsObserver extends AbstractResultWritingObserver {
     public void report() {
         StringBuilder sb = new StringBuilder();
 
-        String date = DATE_FORMAT.format(new Date());
+        String date = dateFormat.format(new Date());
         sb.append(date).append('\n');
 
-        final long total = totalPermutations.get();
-        final long totalSinceLastTick = total - totalOnLastTick;
-        totalOnLastTick = total;
-        final int independent = independentPermutations.get();
+        final long totalSinceLastTick = totalPermutations - totalOnLastTick;
+        totalOnLastTick = totalPermutations;
 
-        sb.append("Total permutations: ").append(total).append('\n');
+        sb.append("Total permutations: ").append(totalPermutations).append('\n');
         sb.append("Since last tick:    ").append(totalSinceLastTick).append('\n');
-        sb.append("Independent:        ").append(independent).append('\n');
+        sb.append("Independent:        ").append(independentPermutations).append('\n');
 
         write(sb.toString());
     }
@@ -76,7 +72,7 @@ public class RunStatisticsObserver extends AbstractResultWritingObserver {
         public void run() {
             try {
                 while (!Thread.interrupted()) {
-                    Thread.sleep(reportingDelayMillis);
+                    Thread.sleep(REPORTING_DELAY_MILLIS);
                     report();
                 }
             } catch (InterruptedException ignored) {
