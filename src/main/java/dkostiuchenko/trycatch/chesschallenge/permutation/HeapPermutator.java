@@ -5,9 +5,9 @@ import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 /**
  * Generates permutations by Heap's algorithm
  */
-public class HeapPermutator implements Permutator<Piece[]> {
+public class HeapPermutator implements Permutator {
 
-    public void permute(Piece[] pieces, int n, PermutationCollector<Piece[]> collector) {
+    public void permute(Piece[] pieces, int n, PermutationCollector collector) {
         if (n == 1) {
             collector.collect(pieces);
         } else {
@@ -27,7 +27,7 @@ public class HeapPermutator implements Permutator<Piece[]> {
     }
 
     @Override
-    public void permute(Piece[] initialState, PermutationCollector<Piece[]> collector) {
+    public void permute(Piece[] initialState, PermutationCollector collector) {
         if (initialState.length <= 1) {
             collector.collect(initialState);
         } else {

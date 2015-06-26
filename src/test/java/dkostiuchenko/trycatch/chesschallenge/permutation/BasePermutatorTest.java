@@ -1,17 +1,21 @@
 package dkostiuchenko.trycatch.chesschallenge.permutation;
 
-import java.util.*;
+import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Base class to test permutation strategy
  */
-public abstract class BasePermutatorTest<P> {
+public abstract class BasePermutatorTest {
 
-    public static class CountingCollector<P> implements Permutator.PermutationCollector<P> {
+    public static class CountingCollector implements Permutator.PermutationCollector {
         public long count;
 
         @Override
-        public void collect(P permutation) {
+        public void collect(Piece[] permutation) {
             count++;
         }
 
@@ -20,33 +24,12 @@ public abstract class BasePermutatorTest<P> {
         }
     }
 
-    public static class UniqueCountingCollector<P> implements Permutator.PermutationCollector<P> {
-        private final Set<P> set = new HashSet<>();
-
-        @Override
-        public void collect(P permutation) {
-            set.add(permutation);
-        }
-
-        public long getCount() {
-            return set.size();
-        }
-    }
-
-    public static class UniqueArrayCountingCollector<P> implements Permutator.PermutationCollector<P> {
+    public static class UniqueArrayCountingCollector implements Permutator.PermutationCollector {
         private final Set<HashableArrayWrapper> set = new HashSet<>();
-        private final List<P> duplicates = new ArrayList<>();
 
         @Override
-        public void collect(P permutation) {
-            final boolean add = set.add(new HashableArrayWrapper((Object[]) permutation));
-            if (!add) {
-                duplicates.add(permutation);
-            }
-        }
-
-        public List<P> getDuplicates() {
-            return duplicates;
+        public void collect(Piece[] permutation) {
+            set.add(new HashableArrayWrapper(permutation));
         }
 
         public long getCount() {
@@ -75,22 +58,16 @@ public abstract class BasePermutatorTest<P> {
         }
     }
 
-    protected long countPermutations(Permutator<P> p, P initialState) {
-        final CountingCollector<P> collector = new CountingCollector<>();
+    protected long countPermutations(Permutator p, Piece[] initialState) {
+        final CountingCollector collector = new CountingCollector();
         p.permute(initialState, collector);
         return collector.getCount();
     }
 
-    protected long countUniquePermutations(Permutator<P> p, P initialState) {
-        if (initialState.getClass().isArray()) {
-            UniqueArrayCountingCollector<P> collector = new UniqueArrayCountingCollector<>();
-            p.permute(initialState, collector);
-            return collector.getCount();
-        } else {
-            UniqueCountingCollector<P> collector = new UniqueCountingCollector<>();
-            p.permute(initialState, collector);
-            return collector.getCount();
-        }
+    protected long countUniquePermutations(Permutator p, Piece[] initialState) {
+        UniqueArrayCountingCollector collector = new UniqueArrayCountingCollector();
+        p.permute(initialState, collector);
+        return collector.getCount();
     }
 
     /**

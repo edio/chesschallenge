@@ -4,7 +4,7 @@ import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class HeapPermutatorTest extends BasePermutatorTest<Piece[]> {
+public class HeapPermutatorTest extends BasePermutatorTest {
 
     @Test
     public void numberOfPermutations() throws Exception {

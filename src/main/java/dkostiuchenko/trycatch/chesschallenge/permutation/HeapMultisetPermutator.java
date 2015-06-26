@@ -7,10 +7,10 @@ import java.util.Arrays;
 /**
  * Generates unique permutations for multisets (i.e. some elements may occur multiple times). Based on Heap's algorithm
  */
-public class HeapMultisetPermutator implements Permutator<Piece[]> {
+public class HeapMultisetPermutator implements Permutator {
 
     @Override
-    public void permute(Piece[] initialState, PermutationCollector<Piece[]> collector) {
+    public void permute(Piece[] initialState, PermutationCollector collector) {
 
         int[] counts = new int[Piece.values().length];
         for (Piece p : initialState) {
@@ -22,7 +22,7 @@ public class HeapMultisetPermutator implements Permutator<Piece[]> {
 
 
     private void permute(Piece[] pieces, int[] occurences, int multisetSplitpoint, int n,
-                         PermutationCollector<Piece[]> collector) {
+                         PermutationCollector collector) {
         if (onlyUniquePiecesLeft(occurences)) {
             if (n == multisetSplitpoint + 1) {
                 collector.collect(pieces);
@@ -64,7 +64,7 @@ public class HeapMultisetPermutator implements Permutator<Piece[]> {
         list[to] = element;
     }
 
-    private <T> int indexOf(T[] list, T element, int startIndex) {
+    private int indexOf(Piece[] list, Piece element, int startIndex) {
         for (int i = startIndex; i < list.length; i++) {
             if (element == list[i]) {
                 return i;

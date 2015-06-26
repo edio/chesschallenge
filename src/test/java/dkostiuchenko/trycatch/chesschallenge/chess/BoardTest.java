@@ -7,7 +7,6 @@ import org.junit.rules.ExpectedException;
 import static dkostiuchenko.trycatch.chesschallenge.TestUtils.failureMsg;
 import static dkostiuchenko.trycatch.chesschallenge.chess.Piece.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class BoardTest {
 
@@ -124,7 +123,7 @@ public class BoardTest {
     public void countForwardDiagonal_iae() {
         Board b = new Board(7, 5);
         thrown.expect(IllegalArgumentException.class);
-        b.countForwardDiagonal(6,6);
+        b.countForwardDiagonal(6, 6);
     }
 
     @Test
