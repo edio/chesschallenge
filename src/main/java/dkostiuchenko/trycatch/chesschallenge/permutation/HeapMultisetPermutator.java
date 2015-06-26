@@ -1,6 +1,6 @@
-package dkostiuchenko.trycatch.chessproblem.permutation;
+package dkostiuchenko.trycatch.chesschallenge.permutation;
 
-import dkostiuchenko.trycatch.chessproblem.Piece;
+import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 
 import java.util.Arrays;
 

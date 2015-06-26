@@ -1,4 +1,4 @@
-package dkostiuchenko.trycatch.chessproblem;
+package dkostiuchenko.trycatch.chesschallenge.chess;
 
 /**
  * All pieces are stateless and can be implemented as singletons. Enum is a perfect way to do that.

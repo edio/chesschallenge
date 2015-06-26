@@ -1,11 +1,9 @@
-package dkostiuchenko.trycatch.chessproblem.piece;
+package dkostiuchenko.trycatch.chesschallenge.chess;
 
-import dkostiuchenko.trycatch.chessproblem.Board;
-import dkostiuchenko.trycatch.chessproblem.Piece;
 import org.junit.Test;
 
-import static dkostiuchenko.trycatch.chessproblem.Piece.*;
-import static dkostiuchenko.trycatch.chessproblem.TestUtils.failureMsg;
+import static dkostiuchenko.trycatch.chesschallenge.chess.Piece.*;
+import static dkostiuchenko.trycatch.chesschallenge.TestUtils.failureMsg;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

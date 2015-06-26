@@ -1,4 +1,4 @@
-package dkostiuchenko.trycatch.chessproblem;
+package dkostiuchenko.trycatch.chesschallenge.chess;
 
 /**
  * Asserts that permutation is independent

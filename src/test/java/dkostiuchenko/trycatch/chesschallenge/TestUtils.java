@@ -1,4 +1,6 @@
-package dkostiuchenko.trycatch.chessproblem;
+package dkostiuchenko.trycatch.chesschallenge;
+
+import dkostiuchenko.trycatch.chesschallenge.chess.Board;
 
 public class TestUtils {
     public static String failureMsg(Board b, String... description) {

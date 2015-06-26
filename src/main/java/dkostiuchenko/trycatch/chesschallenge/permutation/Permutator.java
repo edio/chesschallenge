@@ -1,4 +1,4 @@
-package dkostiuchenko.trycatch.chessproblem.permutation;
+package dkostiuchenko.trycatch.chesschallenge.permutation;
 
 /**
  * Generates permutations from specific set of pieces and board configuration
