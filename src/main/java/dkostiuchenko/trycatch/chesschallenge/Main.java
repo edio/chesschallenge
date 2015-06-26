@@ -69,9 +69,10 @@ public class Main {
                 .help("Number of kings on the board");
 
         final ArgumentGroup calculation = parser.addArgumentGroup("Calculation settings");
-        calculation.addArgument("-p", "--permutation-strategy").action(new StoreArgumentAction()).required(true)
+        calculation.addArgument("-p", "--permutation-strategy").action(new StoreArgumentAction())
                 .type(Application.PermutationStrategyType.class)
                 .choices(Application.PermutationStrategyType.values())
+                .setDefault(Application.PermutationStrategyType.HEAP_MULTISET)
                 .help("Permutation strategy to use");
 
         final ArgumentGroup outputSettings = parser.addArgumentGroup("Output settings");
