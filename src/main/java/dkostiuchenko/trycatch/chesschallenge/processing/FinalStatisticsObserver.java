@@ -1,8 +1,6 @@
 package dkostiuchenko.trycatch.chesschallenge.processing;
 
 import dkostiuchenko.trycatch.chesschallenge.chess.Board;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.io.Writer;
 import java.util.concurrent.atomic.AtomicInteger;
