@@ -5,7 +5,7 @@ import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 /**
  * Generates permutations by Heap's algorithm
  */
-public class HeapPermutator implements Permutator {
+public class HeapPermutationStrategy implements PermutationStrategy {
 
     public void permute(Piece[] pieces, int n, PermutationCollector collector) {
         if (n == 1) {

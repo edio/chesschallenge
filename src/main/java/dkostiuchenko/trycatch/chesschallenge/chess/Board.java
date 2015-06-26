@@ -25,7 +25,10 @@ public class Board {
         }
     }
 
-    public Board(final int files, final int ranks, final Piece[] squares) {
+    /**
+     * Constructor for {@link BoardFactory}
+     */
+    Board(final int files, final int ranks, final Piece[] squares) {
         if (squares.length != files * ranks) {
             throw new IllegalArgumentException("Squares array length is not equal to files*ranks");
         }
@@ -43,7 +46,8 @@ public class Board {
      */
     public void validateSquare(int file, int rank) throws IllegalArgumentException {
         if (!isValidSquare(file, rank)) {
-            throw new IllegalArgumentException("Square " + file + "x" + rank + " is not on board " + files + "x" + ranks);
+            throw new IllegalArgumentException("Square " + file + "x" + rank + " is not on board " + files + "x" +
+                    ranks);
         }
     }
 
@@ -137,7 +141,7 @@ public class Board {
 
         final int finalIndex = files * (ranks - 1) + rank;
         final int increment = ranks;
-        for (int index = rank; index < finalIndex; index += increment) {
+        for (int index = rank; index <= finalIndex; index += increment) {
             if (squares[index] != Piece.NONE) {
                 count++;
             }
@@ -146,7 +150,8 @@ public class Board {
     }
 
     /**
-     * Count pieces which are placed on the diagonal that includes specific square and is parallel to long black diagonal
+     * Count pieces which are placed on the diagonal that includes specific square and is parallel to long black
+     * diagonal
      *
      * @return number of pieces
      */
@@ -178,7 +183,8 @@ public class Board {
     }
 
     /**
-     * Count pieces which are placed on the diagonal that includes specific square and is parallel to long white diagonal
+     * Count pieces which are placed on the diagonal that includes specific square and is parallel to long white
+     * diagonal
      *
      * @return number of pieces
      */
@@ -225,6 +231,10 @@ public class Board {
      */
     public int ranks() {
         return ranks;
+    }
+
+    Piece[] getSquares() {
+        return squares;
     }
 
     // visible for testing

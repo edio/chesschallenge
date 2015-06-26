@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public abstract class BasePermutatorTest {
 
-    public static class CountingCollector implements Permutator.PermutationCollector {
+    public static class CountingCollector implements PermutationCollector {
         public long count;
 
         @Override
@@ -24,7 +24,7 @@ public abstract class BasePermutatorTest {
         }
     }
 
-    public static class UniqueArrayCountingCollector implements Permutator.PermutationCollector {
+    public static class UniqueArrayCountingCollector implements PermutationCollector {
         private final Set<HashableArrayWrapper> set = new HashSet<>();
 
         @Override
@@ -58,13 +58,13 @@ public abstract class BasePermutatorTest {
         }
     }
 
-    protected long countPermutations(Permutator p, Piece[] initialState) {
+    protected long countPermutations(PermutationStrategy p, Piece[] initialState) {
         final CountingCollector collector = new CountingCollector();
         p.permute(initialState, collector);
         return collector.getCount();
     }
 
-    protected long countUniquePermutations(Permutator p, Piece[] initialState) {
+    protected long countUniquePermutations(PermutationStrategy p, Piece[] initialState) {
         UniqueArrayCountingCollector collector = new UniqueArrayCountingCollector();
         p.permute(initialState, collector);
         return collector.getCount();

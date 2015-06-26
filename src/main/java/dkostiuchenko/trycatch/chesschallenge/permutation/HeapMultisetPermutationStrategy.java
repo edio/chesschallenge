@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Generates unique permutations for multisets (i.e. some elements may occur multiple times). Based on Heap's algorithm
  */
-public class HeapMultisetPermutator implements Permutator {
+public class HeapMultisetPermutationStrategy implements PermutationStrategy {
 
     @Override
     public void permute(Piece[] initialState, PermutationCollector collector) {

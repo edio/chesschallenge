@@ -4,18 +4,18 @@ import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class HeapMultisetPermutatorTest extends BasePermutatorTest {
+public class HeapMultisetPermutationStrategyTest extends BasePermutatorTest {
 
     @Test
     public void numberOfPermutations() throws Exception {
-        HeapMultisetPermutator permutator = new HeapMultisetPermutator();
+        HeapMultisetPermutationStrategy permutator = new HeapMultisetPermutationStrategy();
         long numberOfPermutations = countUniquePermutations(permutator, Piece.values());
         Assert.assertEquals(arrangements(6, 6), numberOfPermutations);
     }
 
     @Test
     public void numberOfMultiSetPermutations() throws Exception {
-        HeapMultisetPermutator permutator = new HeapMultisetPermutator();
+        HeapMultisetPermutationStrategy permutator = new HeapMultisetPermutationStrategy();
         long numberOfPermutations = countPermutations(permutator, new Piece[]{
                 Piece.BISHOP,
                 Piece.BISHOP,
@@ -29,7 +29,7 @@ public class HeapMultisetPermutatorTest extends BasePermutatorTest {
 
     @Test
     public void numberOfMultiSetUniquePermutations() throws Exception {
-        HeapMultisetPermutator permutator = new HeapMultisetPermutator();
+        HeapMultisetPermutationStrategy permutator = new HeapMultisetPermutationStrategy();
         final Piece[] initialState = {
                 Piece.QUEEN,
                 Piece.QUEEN,

@@ -1,7 +1,9 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
+import dkostiuchenko.trycatch.chesschallenge.TestUtils;
 import org.junit.Test;
 
+import static dkostiuchenko.trycatch.chesschallenge.TestUtils.failureMsg;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -38,5 +40,29 @@ public class IndependenceCheckerTest {
             b.set(Piece.ROOK, i, i);
         }
         assertTrue(checker.isIndependent(b));
+    }
+
+    @Test
+    public void independentFromTask() {
+        final int size = 4;
+
+        Board b = new Board(size, size);
+        b.set(Piece.ROOK, 1, 3);
+        b.set(Piece.ROOK, 0, 2);
+        b.set(Piece.KNIGHT, 3, 3);
+        b.set(Piece.KNIGHT, 3, 1);
+        b.set(Piece.KNIGHT, 3, 0);
+        b.set(Piece.KNIGHT, 2, 0);
+        assertFalse(failureMsg(b), checker.isIndependent(b));
+
+        b = new Board(size, size);
+        b.set(Piece.ROOK, 0, 3);
+        b.set(Piece.ROOK, 2, 1);
+        b.set(Piece.KNIGHT, 1, 0);
+        b.set(Piece.KNIGHT, 1, 2);
+        b.set(Piece.KNIGHT, 3, 0);
+        b.set(Piece.KNIGHT, 3, 2);
+        assertTrue(failureMsg(b), checker.isIndependent(b));
+
     }
 }
