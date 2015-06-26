@@ -75,8 +75,10 @@ public class RunStatisticsObserver extends AbstractResultWritingObserver {
         @Override
         public void run() {
             try {
-                Thread.sleep(reportingDelayMillis);
-                report();
+                while (!Thread.interrupted()) {
+                    Thread.sleep(reportingDelayMillis);
+                    report();
+                }
             } catch (InterruptedException ignored) {
             } catch (Exception e) {
                 RunStatisticsObserver.this.write("Statistics reporter has crashed!");
