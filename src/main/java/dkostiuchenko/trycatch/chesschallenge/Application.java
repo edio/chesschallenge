@@ -62,7 +62,8 @@ public class Application {
             PermutationStrategy strategy = createPermutationStrategy();
 
             BoardFactory boardFactory = new BoardFactory(boardFiles, boardRanks);
-            ObservableCollector collector = createCollector(boardFactory);
+            IndependenceChecker checker = new IndependenceChecker();
+            ObservableCollector collector = new SynchronousDelegatingCollector(checker, boardFactory);
             Iterable<AbstractResultWritingObserver> interimObservers = createInterimObservers(boardFactory);
             for (ResultObserver resultObserver : interimObservers) {
                 collector.addObserver(resultObserver);
@@ -73,15 +74,6 @@ public class Application {
             }
 
             return new Application(initialPermutation, strategy, collector, endObsevers);
-        }
-
-        private SynchronousDelegatingCollector createCollector(BoardFactory boardFactory) {
-            IndependenceChecker checker = new IndependenceChecker();
-            if (concurrencyLevel <= 0) {
-                return new SynchronousDelegatingCollector(checker, boardFactory);
-            } else {
-                throw new IllegalArgumentException("Concurrency is not supported yet");
-            }
         }
 
         private PermutationStrategy createPermutationStrategy() {

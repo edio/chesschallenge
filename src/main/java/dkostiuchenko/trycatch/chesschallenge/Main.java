@@ -24,7 +24,6 @@ public class Main {
                     .setIndependentLimit(nameSpace.getInt("print_limit"))
                     .setVerbose(nameSpace.getBoolean("verbose"))
                     .setPermutationStrategy(nameSpace.<Application.PermutationStrategyType>get("permutation_strategy"))
-                    .setConcurrencyLevel(nameSpace.getInt("concurrency"))
                     .build();
             app.run();
         } catch (IllegalArgumentException iae) {
@@ -74,11 +73,6 @@ public class Main {
                 .type(Application.PermutationStrategyType.class)
                 .choices(Application.PermutationStrategyType.values())
                 .help("Permutation strategy to use");
-        calculation.addArgument("-c", "--concurrency").action(new StoreArgumentAction())
-                .type(Integer.class)
-                .setDefault(0)
-                .required(false)
-                .help("Level of concurrency. 0 means serial processing");
 
         final ArgumentGroup outputSettings = parser.addArgumentGroup("Output settings");
         outputSettings.addArgument("-v", "--verbose").action(new StoreConstArgumentAction()).setDefault(false)
