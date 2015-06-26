@@ -20,7 +20,7 @@ public class RunStatisticsObserver extends AbstractResultWritingObserver {
     private final AtomicInteger independentPermutations = new AtomicInteger();
     private long totalOnLastTick;
     private final long reportingDelayMillis;
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:SS.sss");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
 
     /**
      * Create reporting observer wiht default reporting delay of {@link #REPORTING_DELAY_MILLIS}
