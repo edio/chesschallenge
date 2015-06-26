@@ -19,7 +19,7 @@ public class FinalStatisticsObserver extends AbstractResultWritingObserver {
     private final long approximateStartTime;
 
     /**
-     * Create reporting observer wiht custom reporting delay
+     * Create reporting observer with custom reporting delay
      */
     public FinalStatisticsObserver(Writer outputWriter, long approximateStartTime) {
         super(outputWriter);
@@ -37,7 +37,6 @@ public class FinalStatisticsObserver extends AbstractResultWritingObserver {
     @Override
     public void report() {
         final long runningTime = System.currentTimeMillis() - approximateStartTime;
-
         StringBuilder sb = new StringBuilder();
         sb.append("Total permutations: ").append(totalPermutations.get()).append('\n');
         sb.append("Independent:        ").append(independentPermutations.get()).append('\n');

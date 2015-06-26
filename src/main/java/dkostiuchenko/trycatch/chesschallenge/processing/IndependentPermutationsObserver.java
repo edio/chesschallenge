@@ -18,8 +18,9 @@ public class IndependentPermutationsObserver extends AbstractResultWritingObserv
     /**
      * Creates observer which stores up to <tt>numberOfPermutations</tt> independent permutations
      *
+     * @param writer               writer to write results to
      * @param numberOfPermutations maximum number of permutations to store
-     * @param boardFactory boardFactory instance
+     * @param boardFactory         boardFactory instance
      */
     public IndependentPermutationsObserver(Writer writer, int numberOfPermutations, BoardFactory boardFactory) {
         super(writer);

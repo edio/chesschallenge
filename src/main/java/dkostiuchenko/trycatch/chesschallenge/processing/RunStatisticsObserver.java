@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Gathers some statistics during execution
+ * Gathers some statistics during execution and prints it periodically
  */
 public class RunStatisticsObserver extends AbstractResultWritingObserver {
 

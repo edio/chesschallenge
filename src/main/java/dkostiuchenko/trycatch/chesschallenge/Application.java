@@ -54,7 +54,6 @@ public class Application {
         private int independentLimit;
         private boolean verbose;
         private PermutationStrategyType permutationStrategy;
-        private int concurrencyLevel;
 
         public Application build() {
             Piece[] initialPermutation = buildInitialPermutation();
@@ -63,7 +62,7 @@ public class Application {
 
             BoardFactory boardFactory = new BoardFactory(boardFiles, boardRanks);
             IndependenceChecker checker = new IndependenceChecker();
-            ObservableCollector collector = new SynchronousDelegatingCollector(checker, boardFactory);
+            SynchronousProcessingCollector collector = new SynchronousProcessingCollector(checker, boardFactory);
             Iterable<AbstractResultWritingObserver> interimObservers = createInterimObservers(boardFactory);
             for (ResultObserver resultObserver : interimObservers) {
                 collector.addObserver(resultObserver);
@@ -194,9 +193,5 @@ public class Application {
             return this;
         }
 
-        public Builder setConcurrencyLevel(int concurrencyLevel) {
-            this.concurrencyLevel = concurrencyLevel;
-            return this;
-        }
     }
 }

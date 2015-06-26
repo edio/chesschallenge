@@ -19,10 +19,6 @@ public abstract class AbstractResultWritingObserver implements ResultObserver {
      */
     public abstract void report();
 
-    protected Writer getWriter() {
-        return outputWriter;
-    }
-
     protected void write(final String str) {
         try {
             outputWriter.write(str);
