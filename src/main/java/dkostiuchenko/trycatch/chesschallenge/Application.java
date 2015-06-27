@@ -4,7 +4,6 @@ import dkostiuchenko.trycatch.chesschallenge.chess.BoardFactory;
 import dkostiuchenko.trycatch.chesschallenge.chess.IndependenceChecker;
 import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 import dkostiuchenko.trycatch.chesschallenge.permutation.HeapMultisetPermutationStrategy;
-import dkostiuchenko.trycatch.chesschallenge.permutation.HeapPermutationStrategy;
 import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationCollector;
 import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationStrategy;
 import dkostiuchenko.trycatch.chesschallenge.processing.*;
@@ -39,7 +38,6 @@ public class Application {
     }
 
     public enum PermutationStrategyType {
-        HEAP,
         HEAP_MULTISET
     }
 
@@ -78,9 +76,6 @@ public class Application {
         private PermutationStrategy createPermutationStrategy() {
             PermutationStrategy strategy;
             switch (permutationStrategy) {
-                case HEAP:
-                    strategy = new HeapPermutationStrategy();
-                    break;
                 case HEAP_MULTISET:
                     strategy = new HeapMultisetPermutationStrategy();
                     break;
