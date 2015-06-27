@@ -1,8 +1,11 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.Arrays;
 
 import static dkostiuchenko.trycatch.chesschallenge.TestUtils.failureMsg;
 import static dkostiuchenko.trycatch.chesschallenge.chess.Piece.*;
@@ -160,4 +163,17 @@ public class BoardTest {
         b.countBackDiagonal(6, 6);
     }
 
+    @Test
+    public void getSquareCoordinates() {
+        Board b = new Board(7, 5);
+
+        int[] s0 = b.getSquareCoordinates(0);
+        Assert.assertArrayEquals(failureMsg(b, Arrays.toString(s0)), new int[] {0, 0}, s0);
+
+        int[] s34 = b.getSquareCoordinates(34);
+        Assert.assertArrayEquals(failureMsg(b, Arrays.toString(s34)), new int[] {6, 4}, s34);
+
+        int[] s20 = b.getSquareCoordinates(20);
+        Assert.assertArrayEquals(failureMsg(b, Arrays.toString(s20)), new int[] {4, 0}, s20);
+    }
 }

@@ -15,7 +15,7 @@ public abstract class BasePermutatorTest {
         public long count;
 
         @Override
-        public void collect(Piece[] permutation) {
+        public void collect(Permutation permutation) {
             count++;
         }
 
@@ -25,36 +25,20 @@ public abstract class BasePermutatorTest {
     }
 
     public static class UniqueArrayCountingCollector implements PermutationCollector {
-        private final Set<HashableArrayWrapper> set = new HashSet<>();
+        private final Set<Permutation> set = new HashSet<>();
 
         @Override
-        public void collect(Piece[] permutation) {
-            set.add(new HashableArrayWrapper(permutation));
+        public void collect(Permutation permutation) {
+            Permutation p = copy(permutation);
+            set.add(p);
+        }
+
+        private Permutation copy(Permutation permutation) {
+            return new Permutation(Arrays.copyOf(permutation.getElements(), permutation.getElements().length));
         }
 
         public long getCount() {
             return set.size();
-        }
-    }
-
-    private static class HashableArrayWrapper {
-        private final Object[] array;
-
-        private HashableArrayWrapper(Object[] array) {
-            this.array = Arrays.copyOf(array, array.length);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            HashableArrayWrapper that = (HashableArrayWrapper) o;
-            return Arrays.equals(array, that.array);
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(array);
         }
     }
 

@@ -52,6 +52,25 @@ public class Board {
     }
 
     /**
+     * Get coordinates of the square by its name
+     * <pre>
+     *     3| 7| 11| 15|
+     *     2| 6| 10| 14|
+     *     1| 5|  9| 13|
+     *     0| 4|  8| 12|
+     * </pre>
+     *
+     * @param square square number
+     * @return 2-elements array [file, rank]
+     * @throws IllegalArgumentException if square is invalid (i.e., not on the board)
+     */
+    public int[] getSquareCoordinates(int square) throws IllegalArgumentException {
+        int file = square / ranks;
+        int rank = square % ranks;
+        return new int[] {file, rank};
+    }
+
+    /**
      * Checks, whether square is on board
      *
      * @param file file of the square
@@ -64,16 +83,36 @@ public class Board {
 
 
     /**
-     * Get piece, if any, located on specified file and rank
+     * Get piece located on specified file and rank
      *
      * @param file file of the square
      * @param rank rank of the square
-     * @return instance or <tt>null</tt>
+     * @return Piece instance
      * @throws IllegalArgumentException if <tt>file</tt> or <tt>rank</tt> is out of board bounds
      */
     public Piece get(int file, int rank) throws IllegalArgumentException {
         final int index = getIndex(file, rank);
         return squares[index];
+    }
+
+    /**
+     * Get piece located on specified square. Squares are numbered from bottom-left corner
+     * <pre>
+     *     3| 7| 11| 15|
+     *     2| 6| 10| 14|
+     *     1| 5|  9| 13|
+     *     0| 4|  8| 12|
+     * </pre>
+     *
+     * @param square square number
+     * @return piece instance
+     * @throws IllegalArgumentException if <tt>square</tt> value is illegal
+     */
+    public Piece get(int square) throws IllegalArgumentException {
+        if (square < 0 | square >= squares.length) {
+            throw new IllegalArgumentException("Square number is illegal");
+        }
+        return squares[square];
     }
 
     /**

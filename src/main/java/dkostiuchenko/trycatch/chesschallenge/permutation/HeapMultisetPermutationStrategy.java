@@ -11,57 +11,45 @@ public class HeapMultisetPermutationStrategy implements PermutationStrategy {
 
     @Override
     public void permute(Piece[] initialState, PermutationCollector collector) {
-
         int[] counts = new int[Piece.values().length];
         for (Piece p : initialState) {
             counts[p.ordinal()]++;
         }
 
-        permute(initialState, counts, 0, initialState.length, collector);
+        Permutation initialPermutaiton = new Permutation(initialState);
+
+        permute(initialPermutaiton, counts, 0, initialState.length, collector);
     }
 
 
-    private void permute(Piece[] pieces, int[] occurences, int multisetSplitpoint, int n,
+    private void permute(Permutation permutation, int[] occurences, int multisetSplitpoint, int n,
                          PermutationCollector collector) {
         if (onlyUniquePiecesLeft(occurences)) {
             if (n == multisetSplitpoint + 1) {
-                collector.collect(pieces);
+                collector.collect(permutation);
             } else {
                 for (int i = multisetSplitpoint; i < n - 1; i++) {
-                    permute(pieces, occurences, multisetSplitpoint, n - 1, collector);
+                    permute(permutation, occurences, multisetSplitpoint, n - 1, collector);
                     int j = ((n - multisetSplitpoint) % 2 == 0) ? i : multisetSplitpoint;
-                    swap(pieces, j, n - 1);
+                    permutation.swap(j, n - 1);
                 }
-                permute(pieces, occurences, multisetSplitpoint, n - 1, collector);
+                permute(permutation, occurences, multisetSplitpoint, n - 1, collector);
             }
         } else {
             if (typesOfPiecesLeft(occurences) == 1) {
-                collector.collect(pieces);
+                collector.collect(permutation);
             } else {
                 for (Piece p : Piece.values()) {
                     if (occurences[p.ordinal()] > 0) {
-                        final int firstOccurence = indexOf(pieces, p, multisetSplitpoint);
-                        final Piece holdPiece = pieces[firstOccurence];
+                        final int firstOccurence = indexOf(permutation.getElements(), p, multisetSplitpoint);
 
-                        move(pieces, holdPiece, firstOccurence, multisetSplitpoint);
-                        permute(pieces, decreaseOccurence(occurences, p), multisetSplitpoint + 1, n, collector);
-                        move(pieces, holdPiece, multisetSplitpoint, firstOccurence);
+                        permutation.move(firstOccurence, multisetSplitpoint);
+                        permute(permutation, decreaseOccurence(occurences, p), multisetSplitpoint + 1, n, collector);
+                        permutation.move(multisetSplitpoint, firstOccurence);
                     }
                 }
             }
         }
-    }
-
-    private void move(Piece[] list, Piece element, int from, int to) {
-        if (from == to) {
-            return;
-        }
-        if (from > to) {
-            System.arraycopy(list, to, list, to + 1, from - to);
-        } else {
-            System.arraycopy(list, from + 1, list, from, to - from);
-        }
-        list[to] = element;
     }
 
     private int indexOf(Piece[] list, Piece element, int startIndex) {
@@ -71,12 +59,6 @@ public class HeapMultisetPermutationStrategy implements PermutationStrategy {
             }
         }
         throw new IllegalStateException("Something went wrong");
-    }
-
-    private void swap(Piece[] array, int j, int i) {
-        Piece t = array[i];
-        array[i] = array[j];
-        array[j] = t;
     }
 
     private int typesOfPiecesLeft(int[] occurences) {

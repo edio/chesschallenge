@@ -1,5 +1,7 @@
 # chesschallenge
 
+This branch holds modified version of the application which maintains index of pieces on board. This drastically increases performance for large boards (+500% for `-f20 -r20 -B2 -Q2 -K2 -N1`) as computational complexity no longer dependends on board size but on number of pieces placed on it. However, for small boards it performs worse.
+
 build executable:
 ````
 ./gradlew shadowJar

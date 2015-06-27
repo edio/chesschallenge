@@ -1,7 +1,7 @@
 package dkostiuchenko.trycatch.chesschallenge;
 
 import dkostiuchenko.trycatch.chesschallenge.chess.BoardFactory;
-import dkostiuchenko.trycatch.chesschallenge.chess.IndependenceChecker;
+import dkostiuchenko.trycatch.chesschallenge.processing.IndependenceChecker;
 import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 import dkostiuchenko.trycatch.chesschallenge.permutation.HeapMultisetPermutationStrategy;
 import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationCollector;

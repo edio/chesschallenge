@@ -1,6 +1,7 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
-import dkostiuchenko.trycatch.chesschallenge.TestUtils;
+import dkostiuchenko.trycatch.chesschallenge.permutation.Permutation;
+import dkostiuchenko.trycatch.chesschallenge.processing.IndependenceChecker;
 import org.junit.Test;
 
 import static dkostiuchenko.trycatch.chesschallenge.TestUtils.failureMsg;
@@ -14,14 +15,14 @@ public class IndependenceCheckerTest {
     @Test
     public void emptyBoard() {
         Board b = new Board(8, 8);
-        assertTrue(checker.isIndependent(b));
+        assertTrue(checker.isIndependent(b, new Permutation(b.getSquares()).getIndex()));
     }
 
     @Test
     public void onePieceOnBoard() {
         Board b = new Board(8, 8);
         b.set(Piece.KING, 5, 4);
-        assertTrue(checker.isIndependent(b));
+        assertTrue(checker.isIndependent(b, new Permutation(b.getSquares()).getIndex()));
     }
 
     @Test
@@ -29,7 +30,7 @@ public class IndependenceCheckerTest {
         Board b = new Board(8, 8);
         b.set(Piece.KING, 5, 4);
         b.set(Piece.KNIGHT, 7, 5);
-        assertFalse(checker.isIndependent(b));
+        assertFalse(checker.isIndependent(b, new Permutation(b.getSquares()).getIndex()));
     }
 
     @Test
@@ -39,7 +40,7 @@ public class IndependenceCheckerTest {
         for (int i = 0; i < size; i++) {
             b.set(Piece.ROOK, i, i);
         }
-        assertTrue(checker.isIndependent(b));
+        assertTrue(checker.isIndependent(b, new Permutation(b.getSquares()).getIndex()));
     }
 
     @Test
@@ -53,7 +54,7 @@ public class IndependenceCheckerTest {
         b.set(Piece.KNIGHT, 3, 1);
         b.set(Piece.KNIGHT, 3, 0);
         b.set(Piece.KNIGHT, 2, 0);
-        assertFalse(failureMsg(b), checker.isIndependent(b));
+        assertFalse(failureMsg(b), checker.isIndependent(b, new Permutation(b.getSquares()).getIndex()));
 
         b = new Board(size, size);
         b.set(Piece.ROOK, 0, 3);
@@ -62,7 +63,7 @@ public class IndependenceCheckerTest {
         b.set(Piece.KNIGHT, 1, 2);
         b.set(Piece.KNIGHT, 3, 0);
         b.set(Piece.KNIGHT, 3, 2);
-        assertTrue(failureMsg(b), checker.isIndependent(b));
+        assertTrue(failureMsg(b), checker.isIndependent(b, new Permutation(b.getSquares()).getIndex()));
 
     }
 }
