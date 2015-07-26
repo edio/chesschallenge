@@ -4,6 +4,7 @@ import dkostiuchenko.trycatch.chesschallenge.chess.BoardFactory;
 import dkostiuchenko.trycatch.chesschallenge.processing.IndependenceChecker;
 import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
 import dkostiuchenko.trycatch.chesschallenge.permutation.HeapMultisetPermutationStrategy;
+import dkostiuchenko.trycatch.chesschallenge.permutation.IterativeMultisetPermutationStrategy;
 import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationCollector;
 import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationStrategy;
 import dkostiuchenko.trycatch.chesschallenge.processing.*;
@@ -38,7 +39,8 @@ public class Application {
     }
 
     public enum PermutationStrategyType {
-        HEAP_MULTISET
+        HEAP_MULTISET,
+        ITERATIVE_MULTISET,
     }
 
     public static class Builder {
@@ -78,6 +80,9 @@ public class Application {
             switch (permutationStrategy) {
                 case HEAP_MULTISET:
                     strategy = new HeapMultisetPermutationStrategy();
+                    break;
+                case ITERATIVE_MULTISET:
+                    strategy = new IterativeMultisetPermutationStrategy();
                     break;
                 default:
                     throw new IllegalArgumentException("Unhandled permutation strategy type " + permutationStrategy);
