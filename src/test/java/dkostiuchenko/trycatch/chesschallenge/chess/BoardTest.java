@@ -1,17 +1,31 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Arrays;
 
 import static dkostiuchenko.trycatch.chesschallenge.TestUtils.failureMsg;
 import static dkostiuchenko.trycatch.chesschallenge.chess.Piece.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BoardTest {
 
     @Rule
     public final ExpectedException thrown = ExpectedException.none();
+
+    @Mock
+    Board.BoardVisitor visitor;
 
     @Test
     public void getIndex_validBounds() {
@@ -160,4 +174,64 @@ public class BoardTest {
         b.countBackDiagonal(6, 6);
     }
 
+    @Test
+    public void getSquareCoordinates() {
+        Board b = new Board(7, 5);
+
+        int[] s0 = b.getSquareCoordinates(0);
+        Assert.assertArrayEquals(failureMsg(b, Arrays.toString(s0)), new int[]{0, 0}, s0);
+
+        int[] s34 = b.getSquareCoordinates(34);
+        Assert.assertArrayEquals(failureMsg(b, Arrays.toString(s34)), new int[]{6, 4}, s34);
+
+        int[] s20 = b.getSquareCoordinates(20);
+        Assert.assertArrayEquals(failureMsg(b, Arrays.toString(s20)), new int[]{4, 0}, s20);
+    }
+
+    @Test
+    public void visit() {
+        Board b = new Board(4, 5);
+
+        b.set(BISHOP, 0, 0);
+        b.set(KNIGHT, 1, 2);
+        b.set(QUEEN, 2, 2);
+        b.set(QUEEN, 2, 3);
+        b.set(ROOK, 3, 3);
+        b.set(KING, 2, 4);
+        b.set(KING, 3, 4);
+
+        when(visitor.onPiece(Mockito.<Board>any(), Mockito.<Piece>any(), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(false);
+
+        boolean result = b.visit(visitor, Piece.KING, Piece.KNIGHT);
+
+        Assert.assertFalse(result);
+        verify(visitor).onPiece(b, KING, 2, 4);
+        verify(visitor).onPiece(b, KING, 3, 4);
+        verify(visitor).onPiece(b, KNIGHT, 1, 2);
+        verifyNoMoreInteractions(visitor);
+    }
+
+    @Test
+    public void visit_true() {
+        Board b = new Board(4, 5);
+
+        b.set(BISHOP, 0, 0);
+        b.set(KNIGHT, 1, 2);
+        b.set(QUEEN, 2, 2);
+
+        when(visitor.onPiece(Mockito.<Board>any(), Mockito.eq(KNIGHT), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(true);
+        when(visitor.onPiece(Mockito.<Board>any(), Mockito.eq(BISHOP), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(false);
+        when(visitor.onPiece(Mockito.<Board>any(), Mockito.eq(QUEEN), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(false);
+
+        boolean result = b.visit(visitor, Piece.BISHOP, Piece.KNIGHT, Piece.QUEEN);
+
+        Assert.assertTrue(result);
+        verify(visitor).onPiece(b, BISHOP, 0, 0);
+        verify(visitor).onPiece(b, KNIGHT, 1, 2);
+        verifyNoMoreInteractions(visitor);
+    }
 }

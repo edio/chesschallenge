@@ -1,6 +1,7 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
-import dkostiuchenko.trycatch.chesschallenge.TestUtils;
+import dkostiuchenko.trycatch.chesschallenge.permutation.Permutation;
+import dkostiuchenko.trycatch.chesschallenge.processing.IndependenceChecker;
 import org.junit.Test;
 
 import static dkostiuchenko.trycatch.chesschallenge.TestUtils.failureMsg;
@@ -63,6 +64,5 @@ public class IndependenceCheckerTest {
         b.set(Piece.KNIGHT, 3, 0);
         b.set(Piece.KNIGHT, 3, 2);
         assertTrue(failureMsg(b), checker.isIndependent(b));
-
     }
 }

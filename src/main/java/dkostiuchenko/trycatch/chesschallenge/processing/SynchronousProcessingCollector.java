@@ -2,8 +2,7 @@ package dkostiuchenko.trycatch.chesschallenge.processing;
 
 import dkostiuchenko.trycatch.chesschallenge.chess.Board;
 import dkostiuchenko.trycatch.chesschallenge.chess.BoardFactory;
-import dkostiuchenko.trycatch.chesschallenge.chess.IndependenceChecker;
-import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
+import dkostiuchenko.trycatch.chesschallenge.permutation.Permutation;
 import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationCollector;
 
 import java.util.LinkedList;
@@ -27,8 +26,8 @@ public class SynchronousProcessingCollector implements PermutationCollector {
     }
 
     @Override
-    public void collect(Piece[] permutation) {
-        Board board = boardFactory.fromRawData(permutation);
+    public void collect(Permutation permutation) {
+        Board board = boardFactory.fromPermutation(permutation);
         notifyObservers(board, checker.isIndependent(board));
     }
 

@@ -16,7 +16,7 @@ public class IndependentPermutationsObserver extends AbstractResultWritingObserv
     private final BlockingQueue<Board> independentPermutations;
 
     /**
-     * Creates observer which stores up to <tt>numberOfPermutations</tt> independent permutations
+     * Creates observer which stores up to {@code numberOfPermutations} independent permutations
      *
      * @param writer               writer to write results to
      * @param numberOfPermutations maximum number of permutations to store
@@ -31,7 +31,7 @@ public class IndependentPermutationsObserver extends AbstractResultWritingObserv
     @Override
     public void notifyResult(Board b, boolean isIndependent) {
         if (isIndependent) {
-            independentPermutations.offer(boardFactory.copy(b));
+            independentPermutations.offer(Board.copyOf(b));
         }
     }
 

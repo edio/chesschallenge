@@ -76,6 +76,7 @@ public class RunStatisticsObserver extends AbstractResultWritingObserver {
                     report();
                 }
             } catch (InterruptedException ignored) {
+                // just stop printing and let thread to finish
             } catch (Exception e) {
                 RunStatisticsObserver.this.write("Statistics reporter has crashed!");
             }

@@ -1,36 +1,31 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
-import java.util.Arrays;
+import dkostiuchenko.trycatch.chesschallenge.permutation.Permutation;
 
 /**
- * Creates {@link Board} objects with constant size
+ * Creates {@link Board} objects with constant size.
+ * <p/>
+ * This implementation caches returned board instance to reduce amount of produced garbage.
  */
 public class BoardFactory {
     private final int files;
     private final int ranks;
+    private final Board cachedInstance;
 
     public BoardFactory(int files, int ranks) {
         this.files = files;
         this.ranks = ranks;
+        this.cachedInstance = new Board(files, ranks);
     }
 
     /**
-     * Builds board from raw data
+     * Builds board from permutation
      *
-     * @param pieces raw data of pieces
-     * @return always new instnace
+     * @return always same board instance. Use {@link #copy(Board)} if you need a copy
      */
-    public Board fromRawData(Piece[] pieces) {
-        return new Board(files, ranks, pieces);
+    public Board fromPermutation(Permutation permutation) {
+        cachedInstance.setPermutation(permutation);
+        return cachedInstance;
     }
 
-    /**
-     * Creates a copy of another board
-     *
-     * @param board board to copy
-     * @return always new instnace
-     */
-    public Board copy(Board board) {
-        return new Board(files, ranks, Arrays.copyOf(board.getSquares(), files * ranks));
-    }
 }

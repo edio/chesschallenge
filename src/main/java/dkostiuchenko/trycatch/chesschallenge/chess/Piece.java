@@ -3,6 +3,7 @@ package dkostiuchenko.trycatch.chesschallenge.chess;
 /**
  * All pieces are stateless and can be implemented as singletons. Enum is a perfect way to do that.
  */
+// if we use int instead of Enum, we can win up to 10% of performance. But readability and safety will suffer
 public enum Piece {
     NONE("_"),
     BISHOP("B") {

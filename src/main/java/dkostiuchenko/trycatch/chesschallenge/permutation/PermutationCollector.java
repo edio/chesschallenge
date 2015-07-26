@@ -12,5 +12,5 @@ public interface PermutationCollector {
      * @param permutation generated permutation. There are no guarantees on immutability. It may be mutated later
      *                    by {@link PermutationStrategy}
      */
-    void collect(Piece[] permutation);
+    void collect(Permutation permutation);
 }
