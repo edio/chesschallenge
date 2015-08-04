@@ -1,40 +1,152 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
- * Board.
- * Indexed from bottom-left corner, as real chess-board.
+ * Chess board. Is characterized by size (number files and ranks). Holds pieces.
+ * Squares can be accessed by file and rank (through helper conversion methods) or by index
+ * <pre>
+ *  rank
+ *   3  |  3|  7| 11| 15|
+ *   2  |  2|  6| 10| 14|
+ *   1  |  1|  5|  9| 13|
+ *   0  |  0|  4|  8| 12|
+ *      -----------------
+ *  file  0   1   2   3
+ * </pre>
  */
-public class Board {
+public final class Board {
 
     private final int files;
     private final int ranks;
-    // on 64-bit jvm Enums may be considerably slower. But we'll see
-    private final Piece[] squares;
+    // on 64-bit jvm Enums are considerably slower and 8 times larger than byte
+    private final byte[] squares;
+    // tracks squares that are not occupied by any piece yet
+    private final Set<Integer> occupiedSquares = new HashSet<>();
 
     public Board(final int files, final int ranks) {
         this.files = files;
         this.ranks = ranks;
-
-        this.squares = new Piece[files * ranks];
-        // this is another drawback of using type-checked enums, we need to init array
-        for (int i = 0; i < this.squares.length; i++) {
-            this.squares[i] = Piece.NONE;
-        }
+        this.squares = new byte[files * ranks];
+        Arrays.fill(squares, Piece.NONE.byteValue());
     }
 
-    /**
-     * Constructor for {@link BoardFactory}
-     */
-    Board(final int files, final int ranks, final Piece[] squares) {
+    /** Copy constructor */
+    private Board(final int files, final int ranks, final byte[] squares, final Collection<Integer> occupiedSquares) {
         if (squares.length != files * ranks) {
             throw new IllegalArgumentException("Squares array length is not equal to files*ranks");
         }
         this.files = files;
         this.ranks = ranks;
-        this.squares = squares;
+        this.squares = Arrays.copyOf(squares, squares.length);
+        this.occupiedSquares.addAll(occupiedSquares);
+    }
+
+    /**
+     * Translate file and rank to square number. Idiomatic way of usage
+     * <pre>
+     *     Board b = new Board(files, ranks);
+     *     b.set(piece, b.square(f, r));
+     *     b.get(b.square(f, r));
+     * </pre>
+     *
+     * @param file file of the square
+     * @param rank rank of the square
+     * @return the square
+     * @throws IllegalArgumentException if no such square exists
+     */
+    public int square(int file, int rank) throws IllegalArgumentException {
+        validateSquare(file, rank);
+        return file * (ranks) + rank;
+    }
+
+    /**
+     * Get file of the square by its number
+     *
+     * @param square the square
+     * @return file of the square
+     * @throws IllegalArgumentException if square is invalid (i.e., not on the board)
+     */
+    public int file(int square) throws IllegalArgumentException {
+        validateSquare(square);
+        int file = square / ranks;
+        return file;
+    }
+
+    /**
+     * Get rank of the square by its number
+     *
+     * @param square the square
+     * @return rank of the square
+     * @throws IllegalArgumentException if square is invalid (i.e., not on the board)
+     */
+    public int rank(int square) throws IllegalArgumentException {
+        validateSquare(square);
+        int rank = square % ranks;
+        return rank;
+    }
+
+    /**
+     * Checks, whether square is on board
+     *
+     * @param file file of the square
+     * @param rank rank of the square
+     * @return {@code true} if square is on board, {@code false} otherwise
+     */
+    public boolean isValidSquare(int file, int rank) {
+        return file >= 0 & file < files & rank >= 0 & rank < ranks;
+    }
+
+    /**
+     * Get piece, if any, located on specified square
+     *
+     * @param square the square
+     * @return Piece instance
+     */
+    public Piece get(int square) {
+        validateSquare(square);
+        return Piece.fromByte(squares[square]);
+    }
+
+    /**
+     * Shortcut for {@code get(square(file, rank))}
+     */
+    public Piece get(int file, int rank) {
+        return get(square(file, rank));
+    }
+
+    /**
+     * Set piece to the board
+     *
+     * @param piece  piece to set
+     * @param square the square
+     */
+    public void set(Piece piece, int square) {
+        if (piece == null) {
+            throw new NullPointerException();
+        }
+
+        validateSquare(square);
+
+        squares[square] = piece.byteValue();
+
+        if (piece == Piece.NONE) {
+            occupiedSquares.remove(square);
+        } else {
+            occupiedSquares.add(square);
+        }
+    }
+
+    /**
+     * Shortcut for {@code set(Piece, square(file, rank))}
+     */
+    public void set(Piece piece, int file, int rank) {
+        set(piece, square(file, rank));
     }
 
     /**
@@ -44,7 +156,7 @@ public class Board {
      * @param rank rank of the square
      * @throws IllegalArgumentException if square is invalid (i.e., not on the board)
      */
-    public void validateSquare(int file, int rank) throws IllegalArgumentException {
+    private void validateSquare(int file, int rank) throws IllegalArgumentException {
         if (!isValidSquare(file, rank)) {
             throw new IllegalArgumentException("Square " + file + "x" + rank + " is not on board " + files + "x" +
                     ranks);
@@ -52,204 +164,49 @@ public class Board {
     }
 
     /**
-     * Checks, whether square is on board
+     * Validate that square is on the board. Throws IllegalArgumentException if it's not
      *
-     * @param file file of the square
-     * @param rank rank of the square
-     * @return <tt>true</tt> if square is on board, <tt>false</tt> otherwise
+     * @param square square number
+     * @throws IllegalArgumentException if square is invalid (i.e., not on the board)
      */
-    public boolean isValidSquare(int file, int rank) {
-        return file >= 0 & file < files & rank >= 0 & rank < ranks;
+    private void validateSquare(int square) throws IllegalArgumentException {
+        if (square < 0 | square >= squares.length) {
+            throw new IllegalAccessError("Square " + square + " is not on board " + files + "x" + ranks);
+        }
     }
 
 
-    /**
-     * Get piece, if any, located on specified file and rank
-     *
-     * @param file file of the square
-     * @param rank rank of the square
-     * @return instance or <tt>null</tt>
-     * @throws IllegalArgumentException if <tt>file</tt> or <tt>rank</tt> is out of board bounds
-     */
-    public Piece get(int file, int rank) throws IllegalArgumentException {
-        final int index = getIndex(file, rank);
-        return squares[index];
-    }
-
-    /**
-     * Checks, whether board has some piece on specified square
-     *
-     * @param file file of the square
-     * @param rank rank of the square
-     * @return <tt>true</tt> if there's some piece on specific square, <tt>false</tt> otherwise
-     * @throws IllegalArgumentException
-     */
-    public boolean hasPiece(int file, int rank) throws IllegalArgumentException {
-        final int index = getIndex(file, rank);
-        return squares[index] != Piece.NONE;
-    }
-
-    /**
-     * Set piece to the board. Setting <tt>null</tt> is equivalent to removing piece from specific square
-     *
-     * @param piece piece to set
-     * @param file  number of vertical
-     * @param rank  number of horizontal
-     */
-    public void set(Piece piece, int file, int rank) {
-        if (piece == null) {
-            throw new NullPointerException();
-        }
-        squares[getIndex(file, rank)] = piece;
-    }
-
-    /**
-     * Count number of pieces on specified file
-     *
-     * @param file file
-     * @return number of pieces
-     */
-    public int countFile(int file) {
-        if (file < 0 | file >= files) {
-            throw new IllegalArgumentException("Index out of bounds");
-        }
-
-        int count = 0;
-
-        final int initialIndex = file * ranks;
-        final int finalIndex = initialIndex + ranks;
-        for (int index = initialIndex; index < finalIndex; index++) {
-            if (squares[index] != Piece.NONE) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Count number of pieces on specified rank
-     *
-     * @param rank rank
-     * @return number of pieces
-     */
-    public int countRank(int rank) {
-        if (rank < 0 | rank >= ranks) {
-            throw new IllegalArgumentException("Index out of bounds");
-        }
-
-        int count = 0;
-
-        final int finalIndex = files * (ranks - 1) + rank;
-        final int increment = ranks;
-        for (int index = rank; index <= finalIndex; index += increment) {
-            if (squares[index] != Piece.NONE) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Count pieces which are placed on the diagonal that includes specific square and is parallel to long black
-     * diagonal
-     *
-     * @return number of pieces
-     */
-    public int countForwardDiagonal(int file, int rank) {
-        final int initialIndex = getIndex(file, rank);
-
-        int count = 0;
-
-        if (squares[initialIndex] != Piece.NONE) {
-            count++;
-        }
-
-        int stepSize = ranks + 1;
-
-        int stepsUp = Math.min(files - file - 1, ranks - rank - 1);
-        for (int s = 0, index = initialIndex + stepSize; s < stepsUp; s++, index += stepSize) {
-            if (squares[index] != Piece.NONE) {
-                count++;
-            }
-        }
-
-        int stepsDown = Math.min(file, rank);
-        for (int s = 0, index = initialIndex - stepSize; s < stepsDown; s++, index -= stepSize) {
-            if (squares[index] != Piece.NONE) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Count pieces which are placed on the diagonal that includes specific square and is parallel to long white
-     * diagonal
-     *
-     * @return number of pieces
-     */
-    public int countBackDiagonal(int file, int rank) {
-        final int initialIndex = getIndex(file, rank);
-
-        int count = 0;
-
-        if (squares[initialIndex] != Piece.NONE) {
-            count++;
-        }
-
-        int stepSize = ranks - 1;
-
-        int stepsUp = Math.min(files - file - 1, rank);
-        for (int s = 0, index = initialIndex + stepSize; s < stepsUp; s++, index += stepSize) {
-            if (squares[index] != Piece.NONE) {
-                count++;
-            }
-        }
-
-        int stepsDown = Math.min(file, ranks - rank - 1);
-        for (int s = 0, index = initialIndex - stepSize; s < stepsDown; s++, index -= stepSize) {
-            if (squares[index] != Piece.NONE) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Size
-     *
-     * @return total number of files
-     */
+    /** Total number of files */
     public int files() {
         return files;
     }
 
-    /**
-     * Size
-     *
-     * @return total number of ranks
-     */
+    /** Total number of files */
     public int ranks() {
         return ranks;
     }
 
-    Piece[] getSquares() {
-        return squares;
+    /** Total number of squares on the board */
+    public int length() {
+        return squares.length;
     }
 
-    // visible for testing
-    int getIndex(int file, int rank) {
-        this.validateSquare(file, rank);
-        return file * (ranks) + rank;
+    /**
+     * Get squeares occupied by pieces
+     *
+     * @return unmodifiable view of underlying list
+     */
+    public Set<Integer> getOccupiedSquares() {
+        return Collections.unmodifiableSet(occupiedSquares);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(squares.length);
+        sb.append('\n');
         for (int r = ranks - 1; r >= 0; r--) {
             for (int f = 0; f < files; f++) {
-                final int index = getIndex(f, r);
-                sb.append(squares[index]).append('|');
+                sb.append(Piece.fromByte(squares[square(f, r)])).append('|');
             }
             sb.append('\n');
         }
@@ -269,5 +226,46 @@ public class Board {
     @Override
     public int hashCode() {
         return Objects.hash(files, ranks) * 31 + Arrays.hashCode(squares);
+    }
+
+    /**
+     * Get immutable object which unambiguously represents board state but occupies less space than board
+     * itself. Object implements {@link Object#hashCode()} and {@link Object#equals(Object)} properly.
+     */
+    public Object getHashableKey() {
+        return new HashableKey(Arrays.copyOf(squares, squares.length));
+    }
+
+    /**
+     * Create copy of board instance. The copy is a deep copy. Any modifications to original won't be reflected in copy
+     * and vice-versa
+     *
+     * @param toCopy board to copy
+     * @return new Board instance
+     */
+    public static Board copyOf(Board toCopy) {
+        Board copy = new Board(toCopy.files, toCopy.ranks, toCopy.squares, toCopy.occupiedSquares);
+        return copy;
+    }
+
+    private static class HashableKey {
+        private final byte[] data;
+
+        private HashableKey(byte[] data) {
+            this.data = data;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            HashableKey that = (HashableKey) o;
+            return Arrays.equals(data, that.data);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(data);
+        }
     }
 }

@@ -1,44 +1,28 @@
 package dkostiuchenko.trycatch.chesschallenge;
 
-import dkostiuchenko.trycatch.chesschallenge.chess.BoardFactory;
-import dkostiuchenko.trycatch.chesschallenge.chess.IndependenceChecker;
+import dkostiuchenko.trycatch.chesschallenge.chess.Board;
 import dkostiuchenko.trycatch.chesschallenge.chess.Piece;
-import dkostiuchenko.trycatch.chesschallenge.permutation.HeapMultisetPermutationStrategy;
-import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationCollector;
-import dkostiuchenko.trycatch.chesschallenge.permutation.PermutationStrategy;
-import dkostiuchenko.trycatch.chesschallenge.processing.*;
+import dkostiuchenko.trycatch.chesschallenge.solver.DftSolver;
+import dkostiuchenko.trycatch.chesschallenge.solver.TransientSmartCollector;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
- * Brings up all dependencies, ties them all together and performs run
+ * Set up everything, ties it all together and performs run
  */
 public class Application {
 
-    private final Piece[] initialPermutation;
-    private final PermutationStrategy permutationStrategy;
-    private final PermutationCollector collector;
-    private final Iterable<AbstractResultWritingObserver> resultObservers;
+    private final DftSolver solver;
+    private final TransientSmartCollector collector;
 
-    public Application(Piece[] initialPermutation, PermutationStrategy permutationStrategy, PermutationCollector
-            collector, Iterable<AbstractResultWritingObserver> resultObservers) {
-        this.initialPermutation = initialPermutation;
-        this.permutationStrategy = permutationStrategy;
+    public Application(DftSolver solver, TransientSmartCollector collector) {
+        this.solver = solver;
         this.collector = collector;
-        this.resultObservers = resultObservers;
     }
 
     public void run() {
-        permutationStrategy.permute(initialPermutation, collector);
-        for (AbstractResultWritingObserver observer : resultObservers) {
-            observer.report();
-        }
-    }
-
-    public enum PermutationStrategyType {
-        HEAP_MULTISET
+        solver.solve();
+        System.out.println("Total solutions found: " + collector.getTotalSolutions());
     }
 
     public static class Builder {
@@ -47,95 +31,39 @@ public class Application {
         private int knights;
         private int kings;
         private int queens;
+
         private int boardFiles;
         private int boardRanks;
-        private int independentLimit;
-        private boolean verbose;
-        private PermutationStrategyType permutationStrategy;
+
+        private int printLimit1;
+        private int printLimit2;
+        private int printSparseFactor;
 
         public Application build() {
-            Piece[] initialPermutation = buildInitialPermutation();
-
-            PermutationStrategy strategy = createPermutationStrategy();
-
-            BoardFactory boardFactory = new BoardFactory(boardFiles, boardRanks);
-            IndependenceChecker checker = new IndependenceChecker();
-            SynchronousProcessingCollector collector = new SynchronousProcessingCollector(checker, boardFactory);
-            Iterable<AbstractResultWritingObserver> interimObservers = createInterimObservers(boardFactory);
-            for (ResultObserver resultObserver : interimObservers) {
-                collector.addObserver(resultObserver);
-            }
-            Iterable<AbstractResultWritingObserver> endObsevers = createEndObservers(boardFactory);
-            for (ResultObserver resultObserver : endObsevers) {
-                collector.addObserver(resultObserver);
-            }
-
-            return new Application(initialPermutation, strategy, collector, endObsevers);
+            Piece[] pieces = buildPieces();
+            TransientSmartCollector collector = new TransientSmartCollector(printLimit1, printSparseFactor,
+                    printLimit2);
+            DftSolver solver = new DftSolver(new Board(boardFiles, boardRanks), pieces, collector);
+            return new Application(solver, collector);
         }
 
-        private PermutationStrategy createPermutationStrategy() {
-            PermutationStrategy strategy;
-            switch (permutationStrategy) {
-                case HEAP_MULTISET:
-                    strategy = new HeapMultisetPermutationStrategy();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unhandled permutation strategy type " + permutationStrategy);
-            }
-            return strategy;
-        }
-
-        private Iterable<AbstractResultWritingObserver> createInterimObservers(BoardFactory boardFactory) {
-            List<AbstractResultWritingObserver> observers = new ArrayList<>();
-
-            if (verbose) {
-                observers.add(RunStatisticsObserver.create(new PrintWriter(System.err)));
-            }
-
-            return observers;
-        }
-
-        private Iterable<AbstractResultWritingObserver> createEndObservers(BoardFactory boardFactory) {
-            List<AbstractResultWritingObserver> observers = new ArrayList<>();
-
-            if (independentLimit > 0) {
-                observers.add(new IndependentPermutationsObserver(new PrintWriter(System.out), independentLimit,
-                        boardFactory));
-            }
-
-            observers.add(new FinalStatisticsObserver(new PrintWriter(System.out), System.currentTimeMillis()));
-
-            return observers;
-        }
-
-        private Piece[] buildInitialPermutation() {
+        private Piece[] buildPieces() {
             final int boardSize = boardFiles * boardRanks;
-            int nones = boardSize - bishops - rooks - knights - kings - queens;
-            if (nones < 0) {
+            final int totalPieces = bishops + rooks + knights + kings + queens;
+            if (totalPieces > boardSize) {
                 throw new IllegalArgumentException("Total number of pieces exceeds board size");
             }
 
-            List<Piece> tmpBoard = new ArrayList<>();
-            for (int i = 0; i < nones; i++) {
-                tmpBoard.add(Piece.NONE);
-            }
-            for (int i = 0; i < bishops; i++) {
-                tmpBoard.add(Piece.BISHOP);
-            }
-            for (int i = 0; i < knights; i++) {
-                tmpBoard.add(Piece.KNIGHT);
-            }
-            for (int i = 0; i < rooks; i++) {
-                tmpBoard.add(Piece.ROOK);
-            }
-            for (int i = 0; i < kings; i++) {
-                tmpBoard.add(Piece.KING);
-            }
-            for (int i = 0; i < queens; i++) {
-                tmpBoard.add(Piece.QUEEN);
-            }
-            Piece[] board = new Piece[boardSize];
-            return tmpBoard.toArray(board);
+            Piece[] pieces = new Piece[totalPieces];
+
+            int offset = 0;
+            Arrays.fill(pieces, offset, offset + bishops, Piece.BISHOP); offset += bishops;
+            Arrays.fill(pieces, offset, offset + rooks, Piece.ROOK); offset += rooks;
+            Arrays.fill(pieces, offset, offset + knights, Piece.KNIGHT); offset += knights;
+            Arrays.fill(pieces, offset, offset + kings, Piece.KING); offset += kings;
+            Arrays.fill(pieces, offset, offset + queens, Piece.QUEEN); offset += queens;
+
+            return pieces;
         }
 
         public Builder setBishops(int bishops) {
@@ -173,20 +101,19 @@ public class Application {
             return this;
         }
 
-        public Builder setIndependentLimit(int independentLimit) {
-            this.independentLimit = independentLimit;
+        public Builder setPrintLimit1(int printLimit1) {
+            this.printLimit1 = printLimit1;
             return this;
         }
 
-        public Builder setVerbose(boolean verbose) {
-            this.verbose = verbose;
+        public Builder setPrintLimit2(int printLimit2) {
+            this.printLimit2 = printLimit2;
             return this;
         }
 
-        public Builder setPermutationStrategy(PermutationStrategyType permutationStrategy) {
-            this.permutationStrategy = permutationStrategy;
+        public Builder setPrintSparseFactor(int printSparseFactor) {
+            this.printSparseFactor = printSparseFactor;
             return this;
         }
-
     }
 }

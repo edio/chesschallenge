@@ -10,6 +10,7 @@ import net.sourceforge.argparse4j.inf.Namespace;
 
 public class Main {
     public static void main(String[] args) {
+
         final Namespace nameSpace = parseArgs(args);
 
         try {
@@ -21,9 +22,9 @@ public class Main {
                     .setQueens(nameSpace.getInt("queens"))
                     .setBoardFiles(nameSpace.getInt("board_files"))
                     .setBoardRanks(nameSpace.getInt("board_ranks"))
-                    .setIndependentLimit(nameSpace.getInt("print_limit"))
-                    .setVerbose(nameSpace.getBoolean("verbose"))
-                    .setPermutationStrategy(nameSpace.<Application.PermutationStrategyType>get("permutation_strategy"))
+                    .setPrintLimit1(nameSpace.getInt("print_limit1"))
+                    .setPrintLimit2(nameSpace.getInt("print_limit2"))
+                    .setPrintSparseFactor(nameSpace.getInt("print_sparse_factor"))
                     .build();
             app.run();
         } catch (IllegalArgumentException iae) {
@@ -68,22 +69,19 @@ public class Main {
                 .setDefault(0)
                 .help("Number of kings on the board");
 
-        final ArgumentGroup calculation = parser.addArgumentGroup("Calculation settings");
-        calculation.addArgument("-p", "--permutation-strategy").action(new StoreArgumentAction())
-                .type(Application.PermutationStrategyType.class)
-                .choices(Application.PermutationStrategyType.values())
-                .setDefault(Application.PermutationStrategyType.HEAP_MULTISET)
-                .help("Permutation strategy to use");
-
         final ArgumentGroup outputSettings = parser.addArgumentGroup("Output settings");
-        outputSettings.addArgument("-v", "--verbose").action(new StoreConstArgumentAction()).setDefault(false)
-                .type(Boolean.class)
-                .setConst(true)
-                .help("Be verbose. Print progress and statistics to stderr");
-        outputSettings.addArgument("-l", "--print-limit").action(new StoreArgumentAction())
+        outputSettings.addArgument("--print-limit1").action(new StoreArgumentAction())
                 .type(Integer.class)
-                .setDefault(10)
-                .help("Print no more than l permutations. This setting doesn't impact calculation");
+                .setDefault(8)
+                .help("Print each solution up to that limit");
+        outputSettings.addArgument("--print-limit2").action(new StoreArgumentAction())
+                .type(Integer.class)
+                .setDefault(5000000)
+                .help("Print every N'th solution up to that limit if where N is determined by --print-sparse-factor");
+        outputSettings.addArgument("--print-sparse-factor").action(new StoreArgumentAction())
+                .type(Integer.class)
+                .setDefault(500000)
+                .help("N parameter for --print-limit2 option");
 
         Namespace ns = null;
         try {

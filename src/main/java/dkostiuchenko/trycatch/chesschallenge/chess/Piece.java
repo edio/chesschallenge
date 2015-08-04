@@ -1,63 +1,79 @@
 package dkostiuchenko.trycatch.chesschallenge.chess;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * All pieces are stateless and can be implemented as singletons. Enum is a perfect way to do that.
  */
 public enum Piece {
     NONE("_"),
-    BISHOP("B") {
+    // Pieces are declared in desc order of their average attacking force.
+    // So when sorted, ones attacking larger part of the field come first
+    // This may be considered as micro optimisation
+    QUEEN("Q") {
         @Override
-        public boolean canAttackFrom(Board board, int file, int rank) {
-            // attacks whenever there are pieces on any of diagonals
-            return board.countForwardDiagonal(file, rank) > 1 || board.countBackDiagonal(file, rank) > 1;
+        public Set<Integer> coveredSquares(Board board, int file, int rank) {
+            Set<Integer> squares = new HashSet<>();
+            squares.addAll(BoardUtil.selectFile(board, file));
+            squares.addAll(BoardUtil.selectRank(board, rank));
+            squares.addAll(BoardUtil.selectForwardDiagonal(board, file, rank));
+            squares.addAll(BoardUtil.selectBackDiagonal(board, file, rank));
+            return squares;
         }
     },
     ROOK("R") {
         @Override
-        public boolean canAttackFrom(Board board, int file, int rank) {
-            // attacks whenever there are pieces on the file or rank
-            return board.countFile(file) > 1 || board.countRank(rank) > 1;
+        public Set<Integer> coveredSquares(Board board, int file, int rank) {
+            Set<Integer> squares = new HashSet<>();
+            squares.addAll(BoardUtil.selectFile(board, file));
+            squares.addAll(BoardUtil.selectRank(board, rank));
+            return squares;
         }
     },
-    QUEEN("Q") {
+    BISHOP("B") {
         @Override
-        public boolean canAttackFrom(Board board, int file, int rank) {
-            // attacks if ROOK or BISHOP can attack from the same square
-            return ROOK.canAttackFrom(board, file, rank) || BISHOP.canAttackFrom(board, file, rank);
+        public Set<Integer> coveredSquares(Board board, int file, int rank) {
+            Set<Integer> squares = new HashSet<>();
+            squares.addAll(BoardUtil.selectForwardDiagonal(board, file, rank));
+            squares.addAll(BoardUtil.selectBackDiagonal(board, file, rank));
+            return squares;
         }
     },
     KING("K") {
         @Override
-        public boolean canAttackFrom(Board board, int file, int rank) {
-            board.validateSquare(file, rank);
+        public Set<Integer> coveredSquares(Board board, int file, int rank) {
+            Set<Integer> squares = new HashSet<>();
+            squares.add(board.square(file, rank));
 
-            boolean northWest = board.isValidSquare(file - 1, rank + 1) && board.hasPiece(file - 1, rank + 1);
-            boolean north = board.isValidSquare(file, rank + 1) && board.hasPiece(file, rank + 1);
-            boolean northEast = board.isValidSquare(file + 1, rank + 1) && board.hasPiece(file + 1, rank + 1);
-            boolean west = board.isValidSquare(file - 1, rank) && board.hasPiece(file - 1, rank);
-            boolean east = board.isValidSquare(file + 1, rank) && board.hasPiece(file + 1, rank);
-            boolean southWest = board.isValidSquare(file - 1, rank - 1) && board.hasPiece(file - 1, rank - 1);
-            boolean south = board.isValidSquare(file, rank - 1) && board.hasPiece(file, rank - 1);
-            boolean southEast = board.isValidSquare(file + 1, rank - 1) && board.hasPiece(file + 1, rank - 1);
+            if (board.isValidSquare(file - 1, rank + 1)) squares.add(board.square(file - 1, rank + 1));
+            if (board.isValidSquare(file, rank + 1)) squares.add(board.square(file, rank + 1));
+            if (board.isValidSquare(file + 1, rank + 1)) squares.add(board.square(file + 1, rank + 1));
+            if (board.isValidSquare(file - 1, rank)) squares.add(board.square(file - 1, rank));
+            if (board.isValidSquare(file + 1, rank)) squares.add(board.square(file + 1, rank));
+            if (board.isValidSquare(file - 1, rank - 1)) squares.add(board.square(file - 1, rank - 1));
+            if (board.isValidSquare(file, rank - 1)) squares.add(board.square(file, rank - 1));
+            if (board.isValidSquare(file + 1, rank - 1)) squares.add(board.square(file + 1, rank - 1));
 
-            return northWest | north | northEast | west | east | southWest | south | southEast;
+            return squares;
         }
     },
     KNIGHT("N") {
         @Override
-        public boolean canAttackFrom(Board board, int file, int rank) {
-            board.validateSquare(file, rank);
+        public Set<Integer> coveredSquares(Board board, int file, int rank) {
+            Set<Integer> squares = new HashSet<>();
+            squares.add(board.square(file, rank));
 
-            boolean westNorth = board.isValidSquare(file - 2, rank + 1) && board.hasPiece(file - 2, rank + 1);
-            boolean northWest = board.isValidSquare(file - 1, rank + 2) && board.hasPiece(file - 1, rank + 2);
-            boolean northEast = board.isValidSquare(file + 1, rank + 2) && board.hasPiece(file + 1, rank + 2);
-            boolean eastNorth = board.isValidSquare(file + 2, rank + 1) && board.hasPiece(file + 2, rank + 1);
-            boolean eastSouth = board.isValidSquare(file + 2, rank - 1) && board.hasPiece(file + 2, rank - 1);
-            boolean southEast = board.isValidSquare(file + 1, rank - 2) && board.hasPiece(file + 1, rank - 2);
-            boolean southWest = board.isValidSquare(file - 1, rank - 2) && board.hasPiece(file - 1, rank - 2);
-            boolean westSouth = board.isValidSquare(file - 2, rank - 1) && board.hasPiece(file - 2, rank - 1);
+            if (board.isValidSquare(file - 2, rank + 1)) squares.add(board.square(file - 2, rank + 1));
+            if (board.isValidSquare(file - 1, rank + 2)) squares.add(board.square(file - 1, rank + 2));
+            if (board.isValidSquare(file + 1, rank + 2)) squares.add(board.square(file + 1, rank + 2));
+            if (board.isValidSquare(file + 2, rank + 1)) squares.add(board.square(file + 2, rank + 1));
+            if (board.isValidSquare(file + 2, rank - 1)) squares.add(board.square(file + 2, rank - 1));
+            if (board.isValidSquare(file + 1, rank - 2)) squares.add(board.square(file + 1, rank - 2));
+            if (board.isValidSquare(file - 1, rank - 2)) squares.add(board.square(file - 1, rank - 2));
+            if (board.isValidSquare(file - 2, rank - 1)) squares.add(board.square(file - 2, rank - 1));
 
-            return westNorth | northWest | northEast | eastNorth | eastSouth | southEast | southWest | westSouth;
+            return squares;
         }
     };
 
@@ -68,8 +84,12 @@ public enum Piece {
     }
 
 
-    // to be overriden by instances
-    public boolean canAttackFrom(Board board, int file, int rank) {
+    /**
+     * Return collection of the squares by this piece if placed on the specific square of the board plus square occupied
+     * by piece itself
+     */
+    public Set<Integer> coveredSquares(Board board, int file, int rank) {
+        // to be overridden by instances
         throw new UnsupportedOperationException();
     }
 
@@ -77,4 +97,13 @@ public enum Piece {
     public String toString() {
         return symbol;
     }
+
+    public byte byteValue() {
+        return (byte) ordinal();
+    }
+
+    public static Piece fromByte(byte byteValue) {
+        return Piece.values()[byteValue];
+    }
+
 }
