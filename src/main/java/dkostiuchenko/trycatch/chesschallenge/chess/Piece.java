@@ -9,8 +9,8 @@ import java.util.Set;
 public enum Piece {
     NONE("_"),
     // Pieces are declared in desc order of their average attacking force.
-    // So when sorted, ones attacking larger part of the field come first
-    // This may be considered as micro optimisation
+    // So when sorted, ones attacking larger part of the field come first.
+    // This may be considered as micro optimisation.
     QUEEN("Q") {
         @Override
         public Set<Integer> coveredSquares(Board board, int file, int rank) {
@@ -89,7 +89,7 @@ public enum Piece {
      * by piece itself
      */
     public Set<Integer> coveredSquares(Board board, int file, int rank) {
-        // to be overridden by instances
+        // To be overridden by instances.
         throw new UnsupportedOperationException();
     }
 

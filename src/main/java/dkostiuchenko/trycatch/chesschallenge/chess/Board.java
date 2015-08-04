@@ -175,7 +175,6 @@ public final class Board {
         }
     }
 
-
     /** Total number of files */
     public int files() {
         return files;
@@ -192,9 +191,9 @@ public final class Board {
     }
 
     /**
-     * Get squeares occupied by pieces
+     * Get squares occupied by pieces
      *
-     * @return unmodifiable view of underlying list
+     * @return unmodifiable view of underlying collection
      */
     public Set<Integer> getOccupiedSquares() {
         return Collections.unmodifiableSet(occupiedSquares);

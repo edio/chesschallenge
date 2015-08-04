@@ -8,14 +8,14 @@ import java.util.List;
  */
 public final class BoardUtil {
     private BoardUtil() {
-        // private constructor to prevent instantiation
+        // Private constructor to prevent instantiation.
     }
 
     /**
      * Count pieces which are placed on the diagonal that includes specific square and is parallel to long black
      * diagonal (from bottom-left to top-right corner)
      *
-     * @return squares on diagonal
+     * @return list of squares
      */
     public static List<Integer> selectForwardDiagonal(Board board, int file, int rank) {
         final int diff = Math.min(file, rank);
@@ -39,7 +39,7 @@ public final class BoardUtil {
      * Count pieces which are placed on the diagonal that includes specific square and is parallel to long white
      * diagonal
      *
-     * @return number of pieces
+     * @return list of squares
      */
     public static List<Integer> selectBackDiagonal(Board board, int file, int rank) {
         final int diff = Math.min(board.files() - file - 1, rank);
@@ -62,7 +62,6 @@ public final class BoardUtil {
     /**
      * Return list of squares located on specific rank on the board
      *
-     * @param rank rank
      * @return list of squares
      */
     public static List<Integer> selectRank(Board board, int rank) {
@@ -81,7 +80,6 @@ public final class BoardUtil {
     /**
      * Return list of squares located on specific file on the board
      *
-     * @param file file
      * @return list of squares
      */
     public static List<Integer> selectFile(Board board, int file) {

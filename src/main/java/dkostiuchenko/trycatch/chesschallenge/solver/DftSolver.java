@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Solver that interprets pieces positions as nodes of a graph. Solver performs depth-first traversal over the graph.
  * <p/>
- * Placing pieces ony by one on the board, solver advances over nodes trying to find such nodes, that all pieces are
+ * Placing pieces one by one on the board, solver advances over nodes trying to find such nodes, that all pieces are
  * placed and no piece is attacked. As soon as solver finds a node, where at least one piece is attacked or no space
  * is left for new pieces, it returns back to parent node and proceeds with different path.
  * Thus, unsuccessful placements are discarded on very early stage without even being generated.
@@ -24,7 +24,11 @@ public class DftSolver {
     private final Set<Object> backtrack = new HashSet<>();
 
     /**
-     * Create new solver for a problem with specific
+     * Create new solver for a problem.
+     * <p/>
+     * Board can be empty or contain some pieces, which will be considered, but won't be moved during solution.
+     * <p/>
+     * Pieces should not contain {@link Piece#NONE}.
      *
      * @param board     board to solve for
      * @param pieces    pieces to solve for
@@ -32,7 +36,7 @@ public class DftSolver {
      */
     public DftSolver(Board board, Piece[] pieces, SolutionCollector collector) {
         this.collector = collector;
-        // create defencive copies
+        // create defensive copies
         this.board = Board.copyOf(board);
         this.pieces = Arrays.copyOf(pieces, pieces.length);
         Arrays.sort(this.pieces);
@@ -41,7 +45,6 @@ public class DftSolver {
     /**
      * Solve independence problem for a specific board and specific set of pieces.
      * <p/>
-     * Board can be empty or contain some pieces, which will be considered, but won't be moved during solution.
      */
     public void solve() {
         traverse(0);

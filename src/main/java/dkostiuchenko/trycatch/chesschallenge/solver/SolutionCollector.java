@@ -7,7 +7,7 @@ import dkostiuchenko.trycatch.chesschallenge.chess.Board;
  */
 public interface SolutionCollector {
     /**
-     * Called by solver when new solution is ready. Implementation must take care of defencive copies, etc.
+     * Called by solver when new solution is ready. Implementation must take care of defensive copies, etc.
      *
      * @param board board instance. May be mutated by further solution progress
      */
