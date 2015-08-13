@@ -64,11 +64,12 @@ public class Cli {
         outputSettings.addArgument("--print-limit1").action(new StoreArgumentAction())
                 .type(Integer.class)
                 .setDefault(8)
-                .help("Print each solution up to that limit");
+                .help("Print each solution to stdout up to that limit");
         outputSettings.addArgument("--print-limit2").action(new StoreArgumentAction())
                 .type(Integer.class)
                 .setDefault(5000000)
-                .help("Print every N'th solution up to that limit if where N is determined by --print-sparse-factor");
+                .help("Print every N'th solution up to that limit to stdout where N is determined by " +
+                        "--print-sparse-factor");
         outputSettings.addArgument("--print-sparse-factor").action(new StoreArgumentAction())
                 .type(Integer.class)
                 .setDefault(500000)
